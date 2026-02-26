@@ -33,6 +33,30 @@ pip install -e ".[cli,server]"
 
 > **Note:** Requires Python 3.11+ and pip 21.3+. The editable install uses `pyproject.toml` with hatchling, which older pip versions don't support. The virtual environment ensures a compatible pip.
 
+### Explain a Command
+
+```bash
+incept --explain "grep -rn 'TODO' --include='*.py' ."
+```
+
+```
+Command: grep -rn 'TODO' --include='*.py' .
+Intent:  search_text
+Explain: Search for pattern TODO in files
+Risk:    safe
+```
+
+```bash
+incept --explain "tar -czf backup.tar.gz /var/log"
+```
+
+```
+Command: tar -czf backup.tar.gz /var/log
+Intent:  compress_archive
+Explain: Create a compressed archive
+Risk:    safe
+```
+
 ### Interactive REPL
 
 ```bash
@@ -40,31 +64,30 @@ incept
 ```
 
 ```
-incept> install nginx
-  apt-get install 'nginx'       # Debian/Ubuntu
-  dnf install 'nginx'           # RHEL/Fedora
-  pacman -S 'nginx'             # Arch
-  brew install 'nginx'          # macOS
-
-incept> /explain tar -czf backup.tar.gz /var/log
-  Command: tar -czf backup.tar.gz /var/log
-  Intent:  compress_archive
+incept> /explain apt-get install -y nginx
+  Command: apt-get install -y nginx
+  Intent:  install_package
+  Explain: Install package nginx
   Risk:    safe
-  Explanation: Create a compressed archive...
+
+incept> /help
+incept> /context
+incept> /exit
 ```
 
-### One-Shot Mode
+### NL → Command (requires trained model)
+
+The forward pipeline (natural language → shell command) requires the fine-tuned GGUF model for slot extraction. Once the model is trained and placed at the configured `INCEPT_MODEL_PATH`:
 
 ```bash
-# Translate to command
+# One-shot
 incept "find all python files modified in the last 7 days"
 
-# Output only the raw command (for scripts)
+# Raw command only (for scripts)
 incept --minimal "find all python files modified in the last 7 days"
-
-# Explain a command
-incept --explain "grep -rn 'TODO' --include='*.py' ."
 ```
+
+Without the model, the preclassifier identifies intents but cannot extract parameters from natural language. The **explain mode**, **compilers**, **safety validator**, and **API server** all work without the model.
 
 ### Shell Plugin (Ctrl+I)
 
