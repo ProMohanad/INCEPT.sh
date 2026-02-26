@@ -62,15 +62,11 @@ class TestMacOSInstallPackage:
         assert result == "brew install nginx"
 
     def test_install_with_assume_yes(self, macos_ctx: EnvironmentContext) -> None:
-        result = compile_install_package(
-            {"package": "wget", "assume_yes": True}, macos_ctx
-        )
+        result = compile_install_package({"package": "wget", "assume_yes": True}, macos_ctx)
         assert result == "brew install wget"
 
     def test_install_with_version(self, macos_ctx: EnvironmentContext) -> None:
-        result = compile_install_package(
-            {"package": "python", "version": "3.11"}, macos_ctx
-        )
+        result = compile_install_package({"package": "python", "version": "3.11"}, macos_ctx)
         assert "python@3.11" in result
 
     def test_install_quoted_package(self, macos_ctx: EnvironmentContext) -> None:
@@ -87,9 +83,7 @@ class TestMacOSRemovePackage:
         assert result == "brew uninstall nginx"
 
     def test_remove_with_purge(self, macos_ctx: EnvironmentContext) -> None:
-        result = compile_remove_package(
-            {"package": "nginx", "purge_config": True}, macos_ctx
-        )
+        result = compile_remove_package({"package": "nginx", "purge_config": True}, macos_ctx)
         assert "brew uninstall" in result
         assert "--zap" in result
 
@@ -177,16 +171,12 @@ class TestMacOSTestConnectivity:
         assert "8.8.8.8" in result
 
     def test_ping_with_count(self, macos_ctx: EnvironmentContext) -> None:
-        result = compile_test_connectivity(
-            {"host": "8.8.8.8", "count": 4}, macos_ctx
-        )
+        result = compile_test_connectivity({"host": "8.8.8.8", "count": 4}, macos_ctx)
         assert "-c" in result
         assert "4" in result
 
     def test_ping_with_timeout(self, macos_ctx: EnvironmentContext) -> None:
-        result = compile_test_connectivity(
-            {"host": "8.8.8.8", "timeout": 5}, macos_ctx
-        )
+        result = compile_test_connectivity({"host": "8.8.8.8", "timeout": 5}, macos_ctx)
         assert "-t" in result
         assert "5" in result
 

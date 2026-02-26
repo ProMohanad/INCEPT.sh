@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -74,6 +75,7 @@ class TestZshScript:
     def test_script_exists(self) -> None:
         assert (SCRIPTS_DIR / "incept.zsh").is_file()
 
+    @pytest.mark.skipif(shutil.which("zsh") is None, reason="zsh not installed")
     def test_syntax_valid(self) -> None:
         result = subprocess.run(
             ["zsh", "-n", str(SCRIPTS_DIR / "incept.zsh")],

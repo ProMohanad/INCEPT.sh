@@ -766,9 +766,7 @@ class TestCompileInstallPackageArch:
         assert "nginx" in result
 
     def test_assume_yes_arch(self, arch_ctx: EnvironmentContext) -> None:
-        result = compile_install_package(
-            {"package": "curl", "assume_yes": True}, arch_ctx
-        )
+        result = compile_install_package({"package": "curl", "assume_yes": True}, arch_ctx)
         assert "--noconfirm" in result
         assert "pacman" in result
 
@@ -778,9 +776,7 @@ class TestCompileInstallPackageArch:
 
     def test_version_ignored_arch(self, arch_ctx: EnvironmentContext) -> None:
         # pacman doesn't support installing specific versions inline
-        result = compile_install_package(
-            {"package": "python", "version": "3.11"}, arch_ctx
-        )
+        result = compile_install_package({"package": "python", "version": "3.11"}, arch_ctx)
         assert "pacman -S" in result
         assert "python" in result
 
@@ -792,9 +788,7 @@ class TestCompileRemovePackageArch:
         assert "apache" in result
 
     def test_purge_arch(self, arch_ctx: EnvironmentContext) -> None:
-        result = compile_remove_package(
-            {"package": "nginx", "purge_config": True}, arch_ctx
-        )
+        result = compile_remove_package({"package": "nginx", "purge_config": True}, arch_ctx)
         assert "pacman -Rns" in result
         assert "nginx" in result
 
@@ -833,9 +827,7 @@ class TestCompileInstallPackageSuse:
         assert "nginx" in result
 
     def test_assume_yes_suse(self, suse_ctx: EnvironmentContext) -> None:
-        result = compile_install_package(
-            {"package": "curl", "assume_yes": True}, suse_ctx
-        )
+        result = compile_install_package({"package": "curl", "assume_yes": True}, suse_ctx)
         assert "-y" in result
         assert "zypper" in result
 
@@ -844,9 +836,7 @@ class TestCompileInstallPackageSuse:
         assert "-y" not in result
 
     def test_version_suse(self, suse_ctx: EnvironmentContext) -> None:
-        result = compile_install_package(
-            {"package": "python3", "version": "3.11"}, suse_ctx
-        )
+        result = compile_install_package({"package": "python3", "version": "3.11"}, suse_ctx)
         assert "python3=3.11" in result or "python3-3.11" in result
 
 
@@ -857,9 +847,7 @@ class TestCompileRemovePackageSuse:
         assert "httpd" in result
 
     def test_purge_suse(self, suse_ctx: EnvironmentContext) -> None:
-        result = compile_remove_package(
-            {"package": "nginx", "purge_config": True}, suse_ctx
-        )
+        result = compile_remove_package({"package": "nginx", "purge_config": True}, suse_ctx)
         assert "zypper remove" in result
         assert "--clean-deps" in result
 

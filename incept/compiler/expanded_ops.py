@@ -210,9 +210,7 @@ def compile_git_branch(params: dict[str, Any], ctx: EnvironmentContext) -> str:
 # ---------------------------------------------------------------------------
 
 
-def compile_generate_ssh_key(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_generate_ssh_key(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile an ``ssh-keygen`` command."""
     parts: list[str] = ["ssh-keygen"]
 
@@ -231,9 +229,7 @@ def compile_generate_ssh_key(
     return " ".join(parts)
 
 
-def compile_copy_ssh_key(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_copy_ssh_key(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile an ``ssh-copy-id`` command."""
     parts: list[str] = ["ssh-copy-id"]
 
@@ -257,9 +253,7 @@ def compile_copy_ssh_key(
 # ---------------------------------------------------------------------------
 
 
-def compile_list_partitions(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_list_partitions(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a partition list command (lsblk or diskutil list)."""
     if ctx.distro_family == "macos":
         device: str | None = params.get("device")
@@ -276,9 +270,7 @@ def compile_list_partitions(
     return " ".join(parts)
 
 
-def compile_check_filesystem(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_check_filesystem(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a filesystem check command (fsck or diskutil verifyDisk)."""
     if ctx.distro_family == "macos":
         return f"diskutil verifyDisk {_q(params['device'], ctx)}"
@@ -290,57 +282,39 @@ def compile_check_filesystem(
 # ---------------------------------------------------------------------------
 
 
-def compile_firewall_allow(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_firewall_allow(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a firewall allow rule (ufw, firewall-cmd, or pfctl)."""
     port = params["port"]
     proto: str | None = params.get("protocol")
 
     if ctx.distro_family == "macos":
         proto_str = proto or "tcp"
-        return (
-            f'echo "pass in proto {proto_str} from any to any port {port}" '
-            f"| sudo pfctl -ef -"
-        )
+        return f'echo "pass in proto {proto_str} from any to any port {port}" | sudo pfctl -ef -'
     elif ctx.distro_family in ("debian", "arch"):
         port_str = f"{port}/{proto}" if proto else str(port)
         return f"ufw allow {port_str}"
     else:
         port_str = f"{port}/{proto}" if proto else f"{port}/tcp"
-        return (
-            f"firewall-cmd --permanent --add-port={port_str} "
-            f"&& firewall-cmd --reload"
-        )
+        return f"firewall-cmd --permanent --add-port={port_str} && firewall-cmd --reload"
 
 
-def compile_firewall_deny(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_firewall_deny(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a firewall deny rule (ufw, firewall-cmd, or pfctl)."""
     port = params["port"]
     proto: str | None = params.get("protocol")
 
     if ctx.distro_family == "macos":
         proto_str = proto or "tcp"
-        return (
-            f'echo "block in proto {proto_str} from any to any port {port}" '
-            f"| sudo pfctl -ef -"
-        )
+        return f'echo "block in proto {proto_str} from any to any port {port}" | sudo pfctl -ef -'
     elif ctx.distro_family in ("debian", "arch"):
         port_str = f"{port}/{proto}" if proto else str(port)
         return f"ufw deny {port_str}"
     else:
         port_str = f"{port}/{proto}" if proto else f"{port}/tcp"
-        return (
-            f"firewall-cmd --permanent --remove-port={port_str} "
-            f"&& firewall-cmd --reload"
-        )
+        return f"firewall-cmd --permanent --remove-port={port_str} && firewall-cmd --reload"
 
 
-def compile_firewall_list(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_firewall_list(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a firewall list command (ufw, firewall-cmd, or pfctl)."""
     if ctx.distro_family == "macos":
         return "sudo pfctl -sr"
@@ -354,9 +328,7 @@ def compile_firewall_list(
 # ---------------------------------------------------------------------------
 
 
-def compile_dns_lookup(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_dns_lookup(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a ``dig`` DNS lookup command."""
     domain = params["domain"]
     record_type: str | None = params.get("record_type")
@@ -368,9 +340,7 @@ def compile_dns_lookup(
     return " ".join(parts)
 
 
-def compile_dns_resolve(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_dns_resolve(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a ``host`` DNS resolution command."""
     return f"host {_q(params['domain'], ctx)}"
 
@@ -380,9 +350,7 @@ def compile_dns_resolve(
 # ---------------------------------------------------------------------------
 
 
-def compile_set_env_var(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_set_env_var(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile an ``export`` command."""
     import re
 
@@ -393,9 +361,7 @@ def compile_set_env_var(
     return f"export {name}={_q(value, ctx)}"
 
 
-def compile_list_env_vars(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_list_env_vars(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile an ``env`` or ``printenv`` command."""
     filter_str: str | None = params.get("filter")
     if filter_str is not None:
@@ -408,19 +374,14 @@ def compile_list_env_vars(
 # ---------------------------------------------------------------------------
 
 
-def compile_create_timer(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_create_timer(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Generate systemd timer unit file creation commands."""
     name = params["name"]
     on_calendar = params["on_calendar"]
     command = params["command"]
     desc: str = params.get("description", f"{name} timer")
 
-    service = (
-        f"[Unit]\\nDescription={desc}\\n\\n"
-        f"[Service]\\nType=oneshot\\nExecStart={command}\\n"
-    )
+    service = f"[Unit]\\nDescription={desc}\\n\\n[Service]\\nType=oneshot\\nExecStart={command}\\n"
     timer = (
         f"[Unit]\\nDescription={desc}\\n\\n"
         f"[Timer]\\nOnCalendar={on_calendar}\\nPersistent=true\\n\\n"
@@ -437,9 +398,7 @@ def compile_create_timer(
     )
 
 
-def compile_list_timers(
-    params: dict[str, Any], ctx: EnvironmentContext
-) -> str:
+def compile_list_timers(params: dict[str, Any], ctx: EnvironmentContext) -> str:
     """Compile a ``systemctl list-timers`` command."""
     parts: list[str] = ["systemctl", "list-timers"]
     if params.get("all", False):

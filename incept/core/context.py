@@ -81,7 +81,7 @@ CONTEXT_SNAPSHOT_SCRIPT = (  # noqa: E501
     "# context_snapshot.sh — collects environment info for INCEPT\n"
     'if [ "$(uname -s)" = "Darwin" ]; then\n'
     '  DID="macos"\n'
-    '  DVER=$(sw_vers -productVersion 2>/dev/null)\n'
+    "  DVER=$(sw_vers -productVersion 2>/dev/null)\n"
     '  DFAM="macos"\n'
     "else\n"
     "  DID=$(. /etc/os-release 2>/dev/null && echo $ID || echo unknown)\n"

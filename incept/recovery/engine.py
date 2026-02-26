@@ -144,14 +144,8 @@ class RecoveryEngine:
             path = ctx.get("path", "")
             parent = "/".join(path.rstrip("/").split("/")[:-1]) or "/"
             basename = path.split("/")[-1]
-            find_cmd = (
-                f"find {parent} -maxdepth 2 -name '*{basename}*'"
-                f" 2>/dev/null || ls {parent}"
-            )
-            msg = (
-                f"Path '{path}' does not exist. "
-                "Searching for similar files in parent directory."
-            )
+            find_cmd = f"find {parent} -maxdepth 2 -name '*{basename}*' 2>/dev/null || ls {parent}"
+            msg = f"Path '{path}' does not exist. Searching for similar files in parent directory."
             return (find_cmd, msg, False)
 
         if pattern_name == "disk_full":

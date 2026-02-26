@@ -65,22 +65,16 @@ class TestDockerRun:
         assert "-d" in result
 
     def test_with_ports(self, ctx: EnvironmentContext) -> None:
-        result = compile_docker_run(
-            {"image": "nginx", "ports": ["80:80", "443:443"]}, ctx
-        )
+        result = compile_docker_run({"image": "nginx", "ports": ["80:80", "443:443"]}, ctx)
         assert "-p 80:80" in result
         assert "-p 443:443" in result
 
     def test_with_volumes(self, ctx: EnvironmentContext) -> None:
-        result = compile_docker_run(
-            {"image": "nginx", "volumes": ["/data:/data"]}, ctx
-        )
+        result = compile_docker_run({"image": "nginx", "volumes": ["/data:/data"]}, ctx)
         assert "-v /data:/data" in result
 
     def test_with_env(self, ctx: EnvironmentContext) -> None:
-        result = compile_docker_run(
-            {"image": "app", "env_vars": ["FOO=bar"]}, ctx
-        )
+        result = compile_docker_run({"image": "app", "env_vars": ["FOO=bar"]}, ctx)
         assert "-e FOO=bar" in result
 
 
@@ -129,18 +123,14 @@ class TestDockerBuild:
         assert "myapp:latest" in result
 
     def test_with_file(self, ctx: EnvironmentContext) -> None:
-        result = compile_docker_build(
-            {"path": ".", "file": "Dockerfile.prod"}, ctx
-        )
+        result = compile_docker_build({"path": ".", "file": "Dockerfile.prod"}, ctx)
         assert "-f" in result
         assert "Dockerfile.prod" in result
 
 
 class TestDockerExec:
     def test_basic(self, ctx: EnvironmentContext) -> None:
-        result = compile_docker_exec(
-            {"container": "my-app", "command": "bash"}, ctx
-        )
+        result = compile_docker_exec({"container": "my-app", "command": "bash"}, ctx)
         assert result.startswith("docker exec")
         assert "my-app" in result
         assert "bash" in result
@@ -280,9 +270,7 @@ class TestCopySshKey:
         assert "server.example.com" in result
 
     def test_with_user(self, ctx: EnvironmentContext) -> None:
-        result = compile_copy_ssh_key(
-            {"host": "server.com", "user": "deploy"}, ctx
-        )
+        result = compile_copy_ssh_key({"host": "server.com", "user": "deploy"}, ctx)
         assert "deploy@server.com" in result
 
     def test_with_identity_file(self, ctx: EnvironmentContext) -> None:
@@ -367,9 +355,7 @@ class TestDnsLookup:
         assert "example.com" in result
 
     def test_with_record_type(self, ctx: EnvironmentContext) -> None:
-        result = compile_dns_lookup(
-            {"domain": "example.com", "record_type": "MX"}, ctx
-        )
+        result = compile_dns_lookup({"domain": "example.com", "record_type": "MX"}, ctx)
         assert "MX" in result
 
 
@@ -387,9 +373,7 @@ class TestDnsResolve:
 
 class TestSetEnvVar:
     def test_basic(self, ctx: EnvironmentContext) -> None:
-        result = compile_set_env_var(
-            {"name": "MY_VAR", "value": "hello"}, ctx
-        )
+        result = compile_set_env_var({"name": "MY_VAR", "value": "hello"}, ctx)
         assert "export" in result
         assert "MY_VAR" in result
         assert "hello" in result

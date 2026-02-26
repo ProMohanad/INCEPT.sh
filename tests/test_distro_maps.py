@@ -57,9 +57,7 @@ class TestResolveFamily:
     def test_suse_canonical(self, distro: str) -> None:
         assert _resolve_family(distro) == "suse"
 
-    @pytest.mark.parametrize(
-        "distro", ["opensuse-leap", "opensuse-tumbleweed", "sles"]
-    )
+    @pytest.mark.parametrize("distro", ["opensuse-leap", "opensuse-tumbleweed", "sles"])
     def test_suse_aliases(self, distro: str) -> None:
         assert _resolve_family(distro) == "suse"
 
@@ -86,9 +84,7 @@ class TestPackageMapCoverage:
         families = {"debian", "rhel", "arch", "suse", "macos"}
         for generic_name, mapping in PACKAGE_MAP.items():
             missing = families - set(mapping.keys())
-            assert not missing, (
-                f"PACKAGE_MAP['{generic_name}'] missing: {missing}"
-            )
+            assert not missing, f"PACKAGE_MAP['{generic_name}'] missing: {missing}"
 
     @pytest.mark.parametrize(
         "generic, family, expected",
@@ -110,9 +106,7 @@ class TestPackageMapCoverage:
             ("redis", "macos", "redis"),
         ],
     )
-    def test_specific_package_mappings(
-        self, generic: str, family: str, expected: str
-    ) -> None:
+    def test_specific_package_mappings(self, generic: str, family: str, expected: str) -> None:
         result = get_package(generic, family)
         assert result is not None
         assert expected in result
@@ -143,9 +137,7 @@ class TestServiceMapCoverage:
         families = {"debian", "rhel", "arch", "suse", "macos"}
         for generic_name, mapping in SERVICE_MAP.items():
             missing = families - set(mapping.keys())
-            assert not missing, (
-                f"SERVICE_MAP['{generic_name}'] missing: {missing}"
-            )
+            assert not missing, f"SERVICE_MAP['{generic_name}'] missing: {missing}"
 
     @pytest.mark.parametrize(
         "generic, family, expected",
@@ -161,9 +153,7 @@ class TestServiceMapCoverage:
             ("ssh", "macos", "ssh"),
         ],
     )
-    def test_specific_service_mappings(
-        self, generic: str, family: str, expected: str
-    ) -> None:
+    def test_specific_service_mappings(self, generic: str, family: str, expected: str) -> None:
         result = get_service(generic, family)
         assert result is not None
         assert expected in result
@@ -181,9 +171,7 @@ class TestPathDefaultsCoverage:
         families = {"debian", "rhel", "arch", "suse", "macos"}
         for category, mapping in PATH_DEFAULTS.items():
             missing = families - set(mapping.keys())
-            assert not missing, (
-                f"PATH_DEFAULTS['{category}'] missing: {missing}"
-            )
+            assert not missing, f"PATH_DEFAULTS['{category}'] missing: {missing}"
 
     @pytest.mark.parametrize(
         "category, family, expected_substring",

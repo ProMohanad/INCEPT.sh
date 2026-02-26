@@ -41,9 +41,7 @@ class SessionStore:
         if self.max_sessions > 0 and len(self._sessions) >= self.max_sessions:
             self.cleanup_expired()
             if len(self._sessions) >= self.max_sessions:
-                raise SessionLimitError(
-                    f"Maximum session limit ({self.max_sessions}) reached"
-                )
+                raise SessionLimitError(f"Maximum session limit ({self.max_sessions}) reached")
         session_id = str(uuid.uuid4())
         self._sessions[session_id] = Session(session_id=session_id)
         return session_id
@@ -75,9 +73,7 @@ class SessionStore:
         """Remove expired sessions. Returns count of removed sessions."""
         now = time.time()
         expired = [
-            sid
-            for sid, s in self._sessions.items()
-            if now - s.last_active > self.timeout_seconds
+            sid for sid, s in self._sessions.items() if now - s.last_active > self.timeout_seconds
         ]
         for sid in expired:
             del self._sessions[sid]

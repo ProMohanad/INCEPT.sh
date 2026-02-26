@@ -16,19 +16,13 @@ class SlashCommandRegistry:
         self.register("/help", self._cmd_help, "Show available commands")
         self.register("/context", self._cmd_context, "Show current environment context")
         self.register("/safe", self._cmd_safe, "Toggle safe mode: /safe on|off")
-        self.register(
-            "/verbose", self._cmd_verbose, "Set verbosity: minimal|normal|detailed"
-        )
+        self.register("/verbose", self._cmd_verbose, "Set verbosity: minimal|normal|detailed")
         self.register("/history", self._cmd_history, "Show command history")
         self.register("/clear", self._cmd_clear, "Clear the screen")
         self.register("/exit", self._cmd_exit, "Exit the REPL")
         self.register("/quit", self._cmd_quit, "Exit the REPL")
-        self.register(
-            "/explain", self._cmd_explain, "Explain a shell command: /explain <command>"
-        )
-        self.register(
-            "/plugin", self._cmd_plugin, "Shell plugin: /plugin install|uninstall"
-        )
+        self.register("/explain", self._cmd_explain, "Explain a shell command: /explain <command>")
+        self.register("/plugin", self._cmd_plugin, "Shell plugin: /plugin install|uninstall")
 
     def register(self, name: str, handler: Callable[[str], str], description: str) -> None:
         """Register a slash command."""

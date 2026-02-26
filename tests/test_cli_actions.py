@@ -12,18 +12,14 @@ class TestExecuteCommand:
 
     @patch("subprocess.run")
     def test_execute_captures_stdout(self, mock_run: MagicMock) -> None:
-        mock_run.return_value = MagicMock(
-            returncode=0, stdout="hello\n", stderr=""
-        )
+        mock_run.return_value = MagicMock(returncode=0, stdout="hello\n", stderr="")
         result = execute_command("echo hello")
         assert result.exit_code == 0
         assert "hello" in result.stdout
 
     @patch("subprocess.run")
     def test_execute_captures_stderr(self, mock_run: MagicMock) -> None:
-        mock_run.return_value = MagicMock(
-            returncode=1, stdout="", stderr="error occurred"
-        )
+        mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="error occurred")
         result = execute_command("bad-cmd")
         assert result.exit_code == 1
         assert "error" in result.stderr

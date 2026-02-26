@@ -25,18 +25,20 @@ class TestContextScript:
     def test_wrapper_returns_environment_context(self, mock_run: MagicMock) -> None:
         mock_run.return_value = MagicMock(
             returncode=0,
-            stdout=json.dumps({
-                "distro_id": "ubuntu",
-                "distro_version": "22.04",
-                "distro_family": "debian",
-                "kernel_version": "5.15.0",
-                "shell": "bash",
-                "shell_version": "5.1",
-                "coreutils_version": "8.32",
-                "user": "testuser",
-                "is_root": False,
-                "cwd": "/home/testuser",
-            }),
+            stdout=json.dumps(
+                {
+                    "distro_id": "ubuntu",
+                    "distro_version": "22.04",
+                    "distro_family": "debian",
+                    "kernel_version": "5.15.0",
+                    "shell": "bash",
+                    "shell_version": "5.1",
+                    "coreutils_version": "8.32",
+                    "user": "testuser",
+                    "is_root": False,
+                    "cwd": "/home/testuser",
+                }
+            ),
         )
         ctx = run_context_snapshot()
         assert isinstance(ctx, EnvironmentContext)
@@ -47,12 +49,14 @@ class TestContextScript:
     def test_handles_missing_os_release(self, mock_run: MagicMock) -> None:
         mock_run.return_value = MagicMock(
             returncode=0,
-            stdout=json.dumps({
-                "distro_id": "unknown",
-                "user": "root",
-                "is_root": True,
-                "cwd": "/root",
-            }),
+            stdout=json.dumps(
+                {
+                    "distro_id": "unknown",
+                    "user": "root",
+                    "is_root": True,
+                    "cwd": "/root",
+                }
+            ),
         )
         ctx = run_context_snapshot()
         assert ctx.distro_id == "unknown"

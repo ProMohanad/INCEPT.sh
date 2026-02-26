@@ -22,9 +22,7 @@ class TestExplainEndpoint:
     async def test_explain_success(self, app) -> None:
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            resp = await client.post(
-                "/v1/explain", json={"command": "grep -r error /var/log"}
-            )
+            resp = await client.post("/v1/explain", json={"command": "grep -r error /var/log"})
             assert resp.status_code == 200
             data = resp.json()
             assert "intent" in data
@@ -42,9 +40,7 @@ class TestExplainEndpoint:
     async def test_explain_unknown_command(self, app) -> None:
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            resp = await client.post(
-                "/v1/explain", json={"command": "frobnicator --quux"}
-            )
+            resp = await client.post("/v1/explain", json={"command": "frobnicator --quux"})
             assert resp.status_code == 200
             data = resp.json()
             assert data["intent"] is None
@@ -53,9 +49,7 @@ class TestExplainEndpoint:
     async def test_explain_has_risk_level(self, app) -> None:
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            resp = await client.post(
-                "/v1/explain", json={"command": "apt-get install nginx"}
-            )
+            resp = await client.post("/v1/explain", json={"command": "apt-get install nginx"})
             data = resp.json()
             assert "risk_level" in data
 
@@ -67,8 +61,6 @@ class TestExplainEndpoint:
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             responses = []
             for _ in range(5):
-                resp = await client.post(
-                    "/v1/explain", json={"command": "ls"}
-                )
+                resp = await client.post("/v1/explain", json={"command": "ls"})
                 responses.append(resp.status_code)
             assert 429 in responses

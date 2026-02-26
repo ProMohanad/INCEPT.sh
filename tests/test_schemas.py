@@ -234,7 +234,9 @@ _VALID_PARAMS: dict[IntentLabel, dict[str, object]] = {
     IntentLabel.list_env_vars: {"filter": "PATH"},
     # Systemd Timers (2)
     IntentLabel.create_timer: {
-        "name": "backup", "on_calendar": "daily", "command": "/opt/backup.sh",
+        "name": "backup",
+        "on_calendar": "daily",
+        "command": "/opt/backup.sh",
     },
     IntentLabel.list_timers: {"all": True},
     # Special (3)

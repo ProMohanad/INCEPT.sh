@@ -5,8 +5,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 _SLASH_COMMANDS = [
-    "/help", "/context", "/safe", "/verbose",
-    "/history", "/clear", "/exit", "/quit",
+    "/help",
+    "/context",
+    "/safe",
+    "/verbose",
+    "/history",
+    "/clear",
+    "/exit",
+    "/quit",
 ]
 
 
@@ -28,8 +34,4 @@ class SlashCompleter:
         """Return completions matching the given prefix."""
         if not text.startswith("/"):
             return []
-        return [
-            Completion(text=cmd, display=cmd)
-            for cmd in self.commands
-            if cmd.startswith(text)
-        ]
+        return [Completion(text=cmd, display=cmd) for cmd in self.commands if cmd.startswith(text)]
