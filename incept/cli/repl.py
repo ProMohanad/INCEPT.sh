@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from incept.cli.commands import SlashCommandRegistry
 from incept.cli.config import InceptConfig
 from incept.cli.display import DisplayManager
@@ -102,7 +104,7 @@ class InceptREPL:
         print(self.get_welcome_banner())
 
         session: PromptSession[str] = PromptSession(
-            history=FileHistory(self.config.history_file),
+            history=FileHistory(os.path.expanduser(self.config.history_file)),
         )
 
         while True:
