@@ -13,7 +13,7 @@ class TestServerConfig:
 
     def test_defaults(self) -> None:
         config = ServerConfig()
-        assert config.host == "0.0.0.0"
+        assert config.host == "127.0.0.1"
         assert config.port == 8080
         assert config.api_key is None
         assert config.rate_limit == 60
