@@ -61,3 +61,25 @@ data/training/unified_train.jsonl
 data/training/command_train.jsonl
 data/training/command_val.jsonl
 data/training/command_test.jsonl
+
+# Sensitive: data generation scripts (contain AI prompting strategies)
+scripts/generate_*.py
+scripts/train_*.py
+scripts/fix_*.py
+
+# Sensitive: template prompts
+scripts/*.md
+*.md.bak
+qwen35b_*.md
+
+# Production data (large + contains generation strategies)
+data/v2/production/
+data/v2/dpo/
+
+# Internal scripts
+scripts/rollback.sh
+scripts/smoke_test.sh
+scripts/load_test.py
+
+# Benchmark results
+test_100_results.json

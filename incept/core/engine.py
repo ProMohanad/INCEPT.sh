@@ -255,6 +255,102 @@ def _check_catastrophic(text: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 
+
+
+# ── Post-processing safety layer ─────────────────────────────
+
+_INJECTION_TRIGGERS = frozenset([
+    "ignore", "forget", "disregard", "override", "bypass",
+    "unrestricted", "jailbreak", "dan", "pretend",
+    "system prompt", "instructions", "what are you",
+    "who are you", "what model", "who created", "who made",
+    "tell me a joke", "write a poem", "write a story",
+    "repeat your", "show your prompt",
+])
+
+_VALID_CMD_STARTERS = frozenset([
+    "sudo", "grep", "find", "ls", "cat", "chmod", "chown", "chgrp",
+    "mkdir", "rmdir", "rm", "cp", "mv", "touch", "head", "tail",
+    "less", "more", "wc", "sort", "uniq", "cut", "awk", "sed",
+    "tar", "zip", "unzip", "gzip", "gunzip", "bzip2", "xz",
+    "ps", "top", "htop", "kill", "pkill", "killall", "pgrep",
+    "df", "du", "free", "uptime", "date", "hostname", "uname",
+    "whoami", "who", "id", "su", "passwd", "useradd", "userdel",
+    "usermod", "groupadd", "groups", "getent", "umask", "chattr",
+    "lsattr", "setfacl", "getfacl",
+    "ip", "ifconfig", "ping", "traceroute", "tracepath", "mtr",
+    "dig", "nslookup", "host", "whois", "curl", "wget", "ssh",
+    "scp", "sftp", "rsync", "nc", "nmap", "ss", "netstat",
+    "iptables", "ufw", "firewall-cmd",
+    "systemctl", "service", "journalctl", "dmesg", "lsmod",
+    "modprobe", "lsblk", "mount", "umount", "fdisk", "lspci",
+    "lsusb", "lshw", "dmidecode", "lscpu", "sensors",
+    "docker", "podman", "kubectl", "git", "make", "gcc",
+    "python", "python3", "pip", "npm", "node",
+    "apt", "apt-get", "dnf", "yum", "pacman", "zypper", "dpkg", "rpm",
+    "crontab", "at", "watch", "screen", "tmux", "nohup",
+    "echo", "printf", "export", "env", "alias", "unalias",
+    "history", "clear", "reset", "man", "which", "whereis",
+    "type", "file", "stat", "readlink", "realpath", "basename",
+    "diff", "patch", "strings", "hexdump", "od", "xxd",
+    "lsof", "strace", "time", "timeout", "nice", "renice",
+    "shutdown", "reboot", "halt", "poweroff", "init",
+    "openssl", "gpg", "md5sum", "sha256sum", "base64",
+    "dd", "shred", "sync", "mkfs", "fsck", "resize2fs",
+    "fg", "bg", "jobs", "wait", "sleep", "seq", "yes",
+    "tee", "xargs", "parallel", "bc", "expr", "factor",
+    "tr", "rev", "tac", "nl", "fold", "fmt", "column",
+    "iconv", "dos2unix", "nano", "vi", "vim", "emacs",
+    "sysctl", "loginctl", "timedatectl", "hostnamectl",
+    "locate", "updatedb", "logrotate", "logger",
+    "chroot", "nsenter", "unshare", "flock",
+    "set", "shopt", "declare", "source", "eval",
+    "test", "[", "[[", "UNSAFE_REQUEST",
+])
+
+
+def _postprocess_output(query: str, raw_output: str) -> str:
+    """Post-process model output for production quality."""
+    output = raw_output.strip()
+    
+    # 1. Take first line only (discard multi-line garbage)
+    if "\n" in output:
+        output = output.split("\n")[0].strip()
+    
+    # 2. Check for prompt injection
+    query_lower = query.lower()
+    for trigger in _INJECTION_TRIGGERS:
+        if trigger in query_lower:
+            return "UNSAFE_REQUEST"
+    
+    # 3. If output is empty or too short
+    if not output or len(output) < 2:
+        return "# Could not generate command"
+    
+    # 4. If output looks like English prose (starts with capital, no command-like structure)
+    first_word = output.split()[0].lower() if output.split() else ""
+    # Strip sudo prefix for checking
+    check_word = first_word
+    if check_word == "sudo" and len(output.split()) > 1:
+        check_word = output.split()[1].lower()
+    
+    if first_word and first_word[0].isupper() and first_word not in ("UNSAFE_REQUEST",):
+        # Looks like English — check if first word is a valid command
+        if check_word not in _VALID_CMD_STARTERS:
+            return "# Could not generate command"
+    
+    # 5. Check first word is a valid command (case-insensitive)
+    if check_word and check_word not in _VALID_CMD_STARTERS:
+        # Might be a path like /usr/bin/something — that's OK
+        if not output.startswith(("/", "./", "~", "$", "(", "{", "!")):
+            # Could be a variable assignment like FOO=bar or a pipeline
+            if "=" not in first_word and "|" not in output[:20]:
+                pass  # Don't block — might be a valid but uncommon command
+    
+    return output
+
+
+
 class InceptEngine:
     """INCEPT v2 runtime engine.
 
@@ -394,7 +490,10 @@ class InceptEngine:
                 original_query=query,
             )
 
-        # 6. Classify response type and risk
+        # 6. Post-process output for production quality
+        raw_text = _postprocess_output(query, raw_text)
+
+        # 7. Classify response type and risk
         resp_type = _classify_type(raw_text)
         risk = _classify_risk(raw_text) if resp_type == "command" else "safe"
 
