@@ -5,7 +5,6 @@ from __future__ import annotations
 from rich.text import Text
 
 
-# Raw penguin lines (no markup — we'll style them manually)
 _PENGUIN_RAW = [
     r"    .--.",
     r"   |o_o |",
@@ -16,52 +15,69 @@ _PENGUIN_RAW = [
     r"\___)=(___/",
 ]
 
-_LOGO_RAW = [
+_INCEPT_RAW = [
     "██╗███╗   ██╗ ██████╗███████╗██████╗ ████████╗",
     "██║████╗  ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝",
     "██║██╔██╗ ██║██║     █████╗  ██████╔╝   ██║   ",
     "██║██║╚██╗██║██║     ██╔══╝  ██╔═══╝    ██║   ",
     "██║██║ ╚████║╚██████╗███████╗██║        ██║   ",
     "╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝╚═╝        ╚═╝   ",
-    "                /Sh                             ",
+]
+
+_SEP = [" ┃ "] * 6
+
+_SH_RAW = [
+    "███████╗██╗  ██╗",
+    "██╔════╝██║  ██║",
+    "███████╗███████║",
+    "╚════██║██╔══██║",
+    "███████║██║  ██║",
+    "╚══════╝╚═╝  ╚═╝",
 ]
 
 
 def render_banner(console, version: str, model_status: str, context: str) -> None:
-    """Render the full welcome banner directly to a Rich console."""
+    """Render the full welcome banner to a Rich console."""
     console.print()
 
-    pad_width = 14  # Width for penguin column
-    max_rows = max(len(_PENGUIN_RAW), len(_LOGO_RAW))
+    pad_width = 14
+    max_rows = max(len(_PENGUIN_RAW), len(_INCEPT_RAW))
 
     for i in range(max_rows):
         line = Text("  ")
-        # Penguin part
+
+        # Penguin
         if i < len(_PENGUIN_RAW):
-            p = _PENGUIN_RAW[i]
-            ptext = Text(p.ljust(pad_width))
-            ptext.stylize("bold cyan")
-            line.append(ptext)
+            p = Text(_PENGUIN_RAW[i].ljust(pad_width))
+            p.stylize("bold cyan")
+            line.append(p)
         else:
             line.append(Text(" " * pad_width))
 
-        line.append(Text("  "))
+        line.append("  ")
 
-        # Logo part
-        if i < len(_LOGO_RAW):
-            ltext = Text(_LOGO_RAW[i])
-            if i < len(_LOGO_RAW) - 1:
-                ltext.stylize("bold white")
-            else:
-                ltext.stylize("bold cyan")
-            line.append(ltext)
+        # INCEPT
+        if i < len(_INCEPT_RAW):
+            t = Text(_INCEPT_RAW[i])
+            t.stylize("bold white")
+            line.append(t)
+
+            # Separator
+            s = Text(_SEP[i])
+            s.stylize("bold white")
+            line.append(s)
+
+            # Sh
+            sh = Text(_SH_RAW[i])
+            sh.stylize("bold cyan")
+            line.append(sh)
 
         console.print(line)
 
     console.print()
     console.print("  [dim italic]── Offline NL → Linux Command Engine ──[/dim italic]")
-    console.print("  [dim]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/dim]")
+    console.print("  [dim]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/dim]")
     console.print(f"  [dim cyan]v{version}[/dim cyan]  [dim]│[/dim]  {model_status}  [dim]│[/dim]  [dim yellow]{context}[/dim yellow]")
-    console.print("  [dim]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/dim]")
+    console.print("  [dim]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/dim]")
     console.print("  [dim]Type a request in plain English, or [bold]/help[/bold] for commands. [bold]Ctrl+D[/bold] to exit.[/dim]")
     console.print()
