@@ -17,6 +17,8 @@ except ImportError:
 
     def _copy(text: str) -> bool:
         return False
+
+
 from incept.cli.commands import SlashCommandRegistry
 from incept.cli.config import InceptConfig
 from incept.core.engine import EngineResponse, InceptEngine
