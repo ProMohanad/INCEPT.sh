@@ -51,6 +51,17 @@ def create_app(config: ServerConfig | None = None) -> FastAPI:
     # Initialize state eagerly for test clients (lifespan may not fire)
     app.state.app_state = AppState(max_sessions=config.max_sessions)
 
+    # CORS — only if origins are configured
+    if config.cors_origins:
+        from fastapi.middleware.cors import CORSMiddleware
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=config.cors_origins,
+            allow_methods=["GET", "POST"],
+            allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+        )
+
     # Middleware — order matters (outermost first)
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestIdMiddleware)

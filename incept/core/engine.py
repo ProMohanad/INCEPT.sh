@@ -262,29 +262,41 @@ def _check_catastrophic(text: str) -> str | None:
 
 # ── Post-processing safety layer ─────────────────────────────
 
-_INJECTION_TRIGGERS = frozenset(
+# Exact-phrase injection triggers
+_INJECTION_TRIGGERS_EXACT = frozenset(
     [
-        "ignore",
-        "forget",
-        "disregard",
-        "override",
-        "bypass",
-        "unrestricted",
-        "jailbreak",
-        "dan",
-        "pretend",
         "system prompt",
-        "instructions",
         "what are you",
         "who are you",
-        "what model",
-        "who created",
-        "who made",
+        "what model are you",
+        "who created you",
+        "who made you",
         "tell me a joke",
         "write a poem",
         "write a story",
-        "repeat your",
+        "repeat your prompt",
         "show your prompt",
+        "ignore previous instructions",
+        "ignore all instructions",
+        "forget your instructions",
+        "disregard previous",
+        "you are now",
+        "act as if",
+        "pretend you",
+        "jailbreak",
+        "unrestricted mode",
+        "bypass restrictions",
+        "dan mode",
+    ]
+)
+
+# Standalone injection triggers
+_INJECTION_TRIGGERS_STANDALONE = frozenset(
+    [
+        "ignore previous",
+        "override instructions",
+        "forget everything",
+        "disregard all",
     ]
 )
 
@@ -507,40 +519,44 @@ _VALID_CMD_STARTERS = frozenset(
         "test",
         "[",
         "[[",
-        "UNSAFE_REQUEST",
     ]
 )
 
 
 def _postprocess_output(query: str, raw_output: str) -> str:
     """Post-process model output for production quality."""
-    output = raw_output.strip()
-
-    # 1. Take first line only (discard multi-line garbage)
-    if "\n" in output:
-        output = output.split("\n")[0].strip()
-
-    # 2. Check for prompt injection
+    # 1. Check for prompt injection in the query (short-circuit early)
     query_lower = query.lower()
-    for trigger in _INJECTION_TRIGGERS:
+    for trigger in _INJECTION_TRIGGERS_EXACT:
         if trigger in query_lower:
             return "UNSAFE_REQUEST"
+    for trigger in _INJECTION_TRIGGERS_STANDALONE:
+        if trigger in query_lower:
+            return "UNSAFE_REQUEST"
+
+    output = raw_output.strip()
+
+    # 2. Take first line only (discard multi-line garbage)
+    if "\n" in output:
+        output = output.split("\n")[0].strip()
 
     # 3. If output is empty or too short
     if not output or len(output) < 2:
         return "# Could not generate command"
 
     # 4. If output looks like English prose (starts with capital, no command-like structure)
-    first_word = output.split()[0].lower() if output.split() else ""
+    words = output.split()
+    original_first = words[0] if words else ""
+    first_word = original_first.lower()
     # Strip sudo prefix for checking
     check_word = first_word
-    if check_word == "sudo" and len(output.split()) > 1:
-        check_word = output.split()[1].lower()
+    if check_word == "sudo" and len(words) > 1:
+        check_word = words[1].lower()
 
     if (
-        first_word
-        and first_word[0].isupper()
-        and first_word not in ("UNSAFE_REQUEST",)
+        original_first
+        and original_first[0].isupper()
+        and first_word not in ("unsafe_request",)
         and check_word not in _VALID_CMD_STARTERS
     ):
         return "# Could not generate command"
@@ -703,6 +719,16 @@ class InceptEngine:
 
         # 6. Post-process output for production quality
         raw_text = _postprocess_output(query, raw_text)
+
+        # 6b. Handle injection/unsafe sentinel from postprocessing
+        if raw_text == "UNSAFE_REQUEST":
+            return EngineResponse(
+                text="Request blocked: not a valid system administration query.",
+                type="blocked",
+                confidence=confidence,
+                risk="blocked",
+                original_query=query,
+            )
 
         # 7. Classify response type and risk
         resp_type = _classify_type(raw_text)

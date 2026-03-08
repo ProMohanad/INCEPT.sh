@@ -56,6 +56,7 @@ _SAFE_MODE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\beval\s+"), "eval command (safe mode)"),
     (re.compile(r">\s*/dev/[sh]d"), "redirect to device (safe mode)"),
     (re.compile(r"\bsudo\s+su\b"), "sudo su (safe mode)"),
+
 ]
 
 # System-critical paths
