@@ -12,14 +12,11 @@ from incept import __version__
 from incept.cli.banner import render_banner
 
 try:
-    from incept.cli.clipboard import copy_to_clipboard as _copy  # type: ignore[attr-defined]
-except (ImportError, AttributeError):
+    from incept.cli.clipboard import copy_text as _copy
+except ImportError:
 
-    def _copy(text: str) -> None:
-        pass
-
-
-copy_to_clipboard = _copy
+    def _copy(text: str) -> bool:
+        return False
 from incept.cli.commands import SlashCommandRegistry
 from incept.cli.config import InceptConfig
 from incept.core.engine import EngineResponse, InceptEngine
@@ -37,6 +34,7 @@ class InceptREPL:
         self.commands = SlashCommandRegistry()
         self.query_history: list[str] = []
         self._chat_history: list[dict[str, str]] = []
+        self._last_resp: EngineResponse | None = None
         self._engine = InceptEngine(think=config.think)
 
     def _print_banner(self) -> None:
@@ -94,6 +92,9 @@ class InceptREPL:
         self._chat_history.append({"role": "assistant", "content": resp.text})
         if len(self._chat_history) > self._MAX_HISTORY_TURNS * 2:
             self._chat_history = self._chat_history[-(self._MAX_HISTORY_TURNS * 2) :]
+
+        # Store for post-response action handling (E/C keys)
+        self._last_resp = resp
 
         return self._format_response(resp, elapsed)
 
@@ -200,5 +201,4 @@ class InceptREPL:
             if result is not None:
                 console.print(result)
                 # Store response for action handling
-                if self.query_history and hasattr(self, "_last_resp"):
-                    last_resp = self._last_resp
+                last_resp = self._last_resp

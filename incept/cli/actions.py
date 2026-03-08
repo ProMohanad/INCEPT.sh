@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shlex
 import subprocess
 
 from pydantic import BaseModel
@@ -34,8 +35,8 @@ def execute_command(
     """
     try:
         result = subprocess.run(
-            command,
-            shell=True,
+            shlex.split(command),
+            shell=False,
             capture_output=True,
             text=True,
             timeout=timeout,

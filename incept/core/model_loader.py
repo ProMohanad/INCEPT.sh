@@ -27,6 +27,7 @@ _MODELS_DIR = Path(__file__).resolve().parent.parent.parent / "models"
 # Port for the llama-server fallback
 _LLAMA_SERVER_PORT = 8787
 _LLAMA_SERVER_PROC: subprocess.Popen[bytes] | None = None
+_ATEXIT_REGISTERED = False
 
 
 def _find_gguf() -> str | None:
@@ -101,23 +102,30 @@ class LlamaServerProxy:
             data=data,
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            result = json.loads(resp.read())
 
-        text = result.get("content", "")
-
-        # Build a response dict matching Llama.__call__ format
-        return {
-            "choices": [
-                {
-                    "text": text,
-                    "logprobs": {
-                        "tokens": [],
-                        "token_logprobs": [],
-                    },
+        # Retry up to 3 times on transient network errors
+        last_exc: Exception | None = None
+        for attempt in range(3):
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    result = json.loads(resp.read())
+                text = result.get("content", "")
+                return {
+                    "choices": [
+                        {
+                            "text": text,
+                            "logprobs": {"tokens": [], "token_logprobs": []},
+                        }
+                    ]
                 }
-            ]
-        }
+            except (urllib.error.URLError, OSError, json.JSONDecodeError) as exc:
+                last_exc = exc
+                if attempt < 2:
+                    time.sleep(0.5 * (attempt + 1))
+
+        raise RuntimeError(
+            f"llama-server request failed after 3 attempts: {last_exc}"
+        ) from last_exc
 
     def close(self) -> None:
         """Shut down the server subprocess."""
@@ -150,7 +158,10 @@ def _start_llama_server(model_path: str, port: int) -> subprocess.Popen[bytes]:
         stderr=subprocess.DEVNULL,
     )
     _LLAMA_SERVER_PROC = proc
-    atexit.register(_stop_llama_server)
+    global _ATEXIT_REGISTERED
+    if not _ATEXIT_REGISTERED:
+        atexit.register(_stop_llama_server)
+        _ATEXIT_REGISTERED = True
 
     # Wait for server to be ready (poll /health)
     deadline = time.time() + 60
@@ -169,6 +180,11 @@ def _start_llama_server(model_path: str, port: int) -> subprocess.Popen[bytes]:
         time.sleep(0.5)
 
     proc.terminate()
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait(timeout=3)
     raise RuntimeError("llama-server failed to become ready within 60 seconds")
 
 
@@ -182,6 +198,8 @@ def _stop_llama_server() -> None:
         except (ProcessLookupError, subprocess.TimeoutExpired):
             with contextlib.suppress(ProcessLookupError):
                 _LLAMA_SERVER_PROC.kill()
+            with contextlib.suppress(ProcessLookupError, subprocess.TimeoutExpired):
+                _LLAMA_SERVER_PROC.wait(timeout=3)
         _LLAMA_SERVER_PROC = None
 
 
