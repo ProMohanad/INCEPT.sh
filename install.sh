@@ -485,8 +485,13 @@ if [[ "$OPT_NO_MODEL" == false && ! -f "$MODEL_PATH" ]]; then
     log "Downloading INCEPT.sh model (774MB) from HuggingFace..."
     log "URL: ${MODEL_URL}"
 
+    # HuggingFace LFS requires the Authorization header even for public repos.
+    # Users can set HF_TOKEN env var; a built-in read-only token is used as fallback.
+    HF_TOKEN="${HF_TOKEN:-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}"
+
     $SUDO curl -L --progress-bar --retry 3 --retry-delay 5 \
         --continue-at - \
+        -H "Authorization: Bearer ${HF_TOKEN}" \
         -o "$MODEL_PATH" \
         "$MODEL_URL" 2>&1 | tee -a "$LOG_FILE" \
         || { $SUDO rm -f "$MODEL_PATH"; die "Model download failed. Check your connection and retry."; }
@@ -494,7 +499,7 @@ if [[ "$OPT_NO_MODEL" == false && ! -f "$MODEL_PATH" ]]; then
     MODEL_SIZE=$(du -m "$MODEL_PATH" | awk '{print $1}')
     if [[ "$MODEL_SIZE" -lt 700 ]]; then
         $SUDO rm -f "$MODEL_PATH"
-        die "Downloaded model is too small (${MODEL_SIZE}MB) — may be corrupt."
+        die "Downloaded model is too small (${MODEL_SIZE}MB) — may be corrupt. Check log: ${LOG_FILE}"
     fi
 
     success "Model downloaded: ${MODEL_PATH} (${MODEL_SIZE}MB)"
