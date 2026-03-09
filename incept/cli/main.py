@@ -42,11 +42,16 @@ def _oneshot(
         else:
             risk = resp.risk or "safe"
             if risk == "safe":
-                console.print(f"  [bold green]$ {escape(resp.text)}[/bold green]")
+                badge = "[bold green]✓ SAFE[/bold green]"
+                cmd_style = "bold green"
             elif risk == "caution":
-                console.print(f"  [bold yellow]⚠ $ {escape(resp.text)}[/bold yellow]")
+                badge = "[bold yellow]⚠ CAUTION[/bold yellow]"
+                cmd_style = "bold yellow"
             else:
-                console.print(f"  [bold red]✗ $ {escape(resp.text)}[/bold red]")
+                badge = "[bold red]✗ DANGEROUS[/bold red]"
+                cmd_style = "bold red"
+            console.print(f"  {badge}")
+            console.print(f"  [{cmd_style}]$ {escape(resp.text)}[/{cmd_style}]")
     elif resp.type == "blocked":
         console.print(f"  [bold red]🛑 {resp.text}[/bold red]")
         sys.exit(1)

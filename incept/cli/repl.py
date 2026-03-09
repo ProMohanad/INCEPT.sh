@@ -159,9 +159,11 @@ class InceptREPL:
             console.print(f"  [dim]{'─' * 40}[/dim]")
             result = execute_command(resp.text, confirmed=True)
             if result.stdout:
-                console.print(f"  {result.stdout}", end="")
+                console.print(result.stdout.rstrip())
             if result.stderr:
-                console.print(f"  [red]{result.stderr}[/red]", end="")
+                console.print(f"  [red]{result.stderr.rstrip()}[/red]")
+            if result.exit_code != 0:
+                console.print(f"  [dim]exit code: {result.exit_code}[/dim]")
             console.print(f"  [dim]{'─' * 40}[/dim]")
         elif action == "c" and resp.type == "command":
             try:
@@ -213,9 +215,13 @@ class InceptREPL:
             last_resp = None
 
             # Handle /clear before dispatching (os.system needed for real clear)
-            if text.strip().lower() == "/clear":
+            txt_lower = text.strip().lower()
+            if txt_lower == "/clear":
                 os.system("clear")
                 continue
+            # Support legacy /context alias
+            if txt_lower == "/context":
+                text = "/sysinfo"
 
             result = self.handle_input(text)
             if result == "__exit__":
