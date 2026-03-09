@@ -32,14 +32,23 @@ _ATEXIT_REGISTERED = False
 
 def _find_gguf() -> str | None:
     """Auto-detect a .gguf file in the models/ directory."""
-    if not _MODELS_DIR.is_dir():
-        return None
-    gguf_files = sorted(_MODELS_DIR.glob("*.gguf"))
-    if not gguf_files:
-        return None
-    if len(gguf_files) > 1:
-        logger.warning("Multiple .gguf files found in %s, using %s", _MODELS_DIR, gguf_files[0])
-    return str(gguf_files[0])
+    search_dirs = [
+        _MODELS_DIR,  # relative to package root
+        Path("/opt/incept-sh/models"),  # system install default
+        Path.home() / ".incept" / "models",  # user-local
+    ]
+    for models_dir in search_dirs:
+        if not models_dir.is_dir():
+            continue
+        gguf_files = sorted(models_dir.glob("*.gguf"))
+        if gguf_files:
+            if len(gguf_files) > 1:
+                logger.warning(
+                    "Multiple .gguf files found in %s, using %s", models_dir, gguf_files[0]
+                )
+            logger.info("Found model: %s", gguf_files[0])
+            return str(gguf_files[0])
+    return None
 
 
 def _load_suppressed(load_fn: Any, path: str) -> Any:
@@ -149,13 +158,13 @@ def _start_llama_server(model_path: str, port: int) -> subprocess.Popen[bytes]:
             "--port",
             str(port),
             "-ngl",
-            "99",
+            "0",  # CPU-only — no GPU layer offload (safe default for all hardware)
             "-c",
             "2048",
             "--log-disable",
         ],
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,  # capture stderr so we can log startup errors
     )
     _LLAMA_SERVER_PROC = proc
     global _ATEXIT_REGISTERED
@@ -167,7 +176,13 @@ def _start_llama_server(model_path: str, port: int) -> subprocess.Popen[bytes]:
     deadline = time.time() + 60
     while time.time() < deadline:
         if proc.poll() is not None:
-            raise RuntimeError(f"llama-server exited with code {proc.returncode} during startup")
+            stderr_out = ""
+            if proc.stderr:
+                stderr_out = proc.stderr.read().decode(errors="replace").strip()
+            msg = f"llama-server exited with code {proc.returncode} during startup"
+            if stderr_out:
+                msg += f": {stderr_out[:300]}"
+            raise RuntimeError(msg)
         try:
             req = urllib.request.Request(f"http://127.0.0.1:{port}/health")
             with urllib.request.urlopen(req, timeout=2) as resp:
