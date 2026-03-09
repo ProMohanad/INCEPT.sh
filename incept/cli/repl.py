@@ -202,9 +202,11 @@ class InceptREPL:
                 console.print("\n  [dim cyan]🐧 Goodbye![/dim cyan]\n")
                 break
 
-            # Handle action on previous command
-            if last_resp and last_resp.type == "command" and text.strip().lower() in ("e", "c"):
-                self._handle_action(last_resp, text)
+            # Handle action on previous command (E=execute, C=copy, Enter=skip)
+            stripped = text.strip().lower()
+            if last_resp and last_resp.type == "command" and stripped in ("e", "c", ""):
+                if stripped in ("e", "c"):
+                    self._handle_action(last_resp, text)
                 last_resp = None
                 continue
 

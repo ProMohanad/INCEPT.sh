@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shlex
 import subprocess
 
 from pydantic import BaseModel
@@ -35,8 +34,9 @@ def execute_command(
     """
     try:
         result = subprocess.run(
-            shlex.split(command),
-            shell=False,
+            command,
+            shell=True,  # required for pipes, redirects, subshells
+            executable="/bin/bash",
             capture_output=True,
             text=True,
             timeout=timeout,
