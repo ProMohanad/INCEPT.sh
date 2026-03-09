@@ -1,4 +1,4 @@
-"""Slash command registry for INCEPT-SH REPL."""
+"""Slash command registry for INCEPT-SH CLI."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from collections.abc import Callable
 
 
 class SlashCommandRegistry:
-    """Registry of /slash commands available in the REPL."""
+    """Registry of /slash commands available in the CLI."""
 
     def __init__(self) -> None:
         self._commands: dict[str, tuple[Callable[[str], str], str]] = {}
@@ -48,7 +48,7 @@ class SlashCommandRegistry:
     def _cmd_help(self, args: str) -> str:
         lines = [
             "",
-            "  [bold cyan]🐧 INCEPT-SH Commands[/bold cyan]",
+            "  [bold cyan]🐧 INCEPT-SH CLI Commands[/bold cyan]",
             "  [dim]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/dim]",
         ]
         for name, (_, desc) in self._commands.items():
@@ -79,10 +79,10 @@ class SlashCommandRegistry:
         return "\033[2J\033[H"
 
     def _cmd_think(self, args: str) -> str:
-        # Toggling is handled by the REPL; this is a stub for the registry
+        # Toggling is handled by the CLI; this is a stub for the registry
         arg = args.strip().lower()
         if arg in ("on", "off", ""):
-            return ""  # REPL intercepts this before dispatch
+            return ""  # CLI intercepts this before dispatch
         return "  Usage: /think on|off"
 
     def _cmd_exit(self, args: str) -> str:

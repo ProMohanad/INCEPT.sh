@@ -37,7 +37,7 @@ class TestHealthEndpoint:
     async def test_health_version(self, client: AsyncClient) -> None:
         resp = await client.get("/v1/health")
         data = resp.json()
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "1.0.0"
 
     @pytest.mark.asyncio
     async def test_health_not_ready_without_model(self, client: AsyncClient) -> None:

@@ -87,7 +87,7 @@ huggingface-cli download 0Time/INCEPT-SH \
 ### Usage
 
 ```bash
-# Interactive REPL
+# Interactive CLI
 incept
 
 # Single query (non-interactive)
@@ -114,7 +114,7 @@ Options:
   --help               Show this message and exit
 ```
 
-**Interactive REPL commands:**
+**Interactive CLI commands:**
 
 | Command    | Description                      |
 |------------|----------------------------------|
@@ -184,7 +184,7 @@ Base model: [Qwen/Qwen3.5-0.8B](https://huggingface.co/Qwen/Qwen3.5-0.8B) (hybri
 
 ```
 incept/
-├── cli/        # Entry point, banner, REPL, command execution
+├── cli/        # Entry point, banner, CLI, command execution
 ├── core/       # Inference engine, model loader, context detection
 ├── safety/     # Validator, risk classification, banned patterns
 ├── server/     # Optional FastAPI server (REST API mode)

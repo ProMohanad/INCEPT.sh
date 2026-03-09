@@ -14,7 +14,7 @@ console = Console()
 
 
 def _run_repl(*, think: bool = False) -> None:
-    """Start the interactive REPL."""
+    """Start the interactive CLI."""
     from incept.cli.repl import InceptREPL
 
     config = load_config()

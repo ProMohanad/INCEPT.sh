@@ -25,7 +25,7 @@ class Completion:
 
 
 class SlashCompleter:
-    """Completer for /slash commands in the REPL."""
+    """Completer for /slash commands in the CLI."""
 
     def __init__(self, commands: list[str] | None = None) -> None:
         self.commands = commands or _SLASH_COMMANDS

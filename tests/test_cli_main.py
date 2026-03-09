@@ -16,7 +16,7 @@ class TestCLIMain:
         runner = CliRunner()
         result = runner.invoke(main, ["--version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output
+        assert "1.0.0" in result.output
 
     def test_query_arg_oneshot(self) -> None:
         runner = CliRunner()

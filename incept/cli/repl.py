@@ -1,4 +1,4 @@
-"""Interactive REPL for INCEPT-SH."""
+"""Interactive CLI for INCEPT-SH."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ console = Console()
 
 
 class InceptREPL:
-    """Interactive Read-Eval-Print Loop for INCEPT-SH."""
+    """Interactive CLI for INCEPT-SH."""
 
     _MAX_HISTORY_TURNS = 6
 

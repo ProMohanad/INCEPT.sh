@@ -1,1 +1,1 @@
-"""Interactive CLI and REPL package."""
+"""Interactive CLI package."""
