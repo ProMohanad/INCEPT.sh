@@ -59,11 +59,12 @@ class SlashCommandRegistry:
         return "\n".join(lines)
 
     def _cmd_context(self, args: str) -> str:
-        from incept.core.context import detect_system_context
+        from incept.core.context import run_context_snapshot
         from incept.core.model_loader import get_model_path
 
         try:
-            ctx = detect_system_context()
+            snap = run_context_snapshot()
+            ctx = f"{snap.distro_id} {snap.distro_version} {snap.shell} {'root' if snap.is_root else 'non-root'}"
         except Exception:
             ctx = "unknown"
         model = get_model_path() or "no model loaded"
