@@ -178,3 +178,7 @@ def uninstall(shell_type: str | None) -> None:
     shell = shell_type or detect_shell()
     msg = uninstall_plugin(shell)
     click.echo(msg)
+
+
+if __name__ == "__main__":
+    main()
