@@ -262,7 +262,7 @@ def get_model(model_path: str | None = None) -> Any | None:
             _MODEL = result["model"]
             _MODEL_PATH = path
             return _MODEL
-        except (ValueError, RuntimeError):
+        except (ValueError, RuntimeError, ImportError, OSError):
             # Force GC so __del__ fires while stderr is still suppressed
             import gc
 

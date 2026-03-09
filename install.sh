@@ -460,6 +460,12 @@ log "Installing INCEPT.sh Python package..."
 $SUDO "$VENV_PIP" install --quiet -e "${INSTALL_DIR}[cli]" >> "$LOG_FILE" 2>&1 \
     || die "Failed to install INCEPT.sh Python dependencies."
 
+# Try to install llama-cpp-python for in-process inference (optional, falls back to llama-server)
+log "Installing llama-cpp-python (optional — fallback to llama-server if this fails)..."
+$SUDO "$VENV_PIP" install --quiet llama-cpp-python >> "$LOG_FILE" 2>&1 \
+    && success "llama-cpp-python installed." \
+    || warn "llama-cpp-python not installed — will use llama-server subprocess instead."
+
 success "Python dependencies installed."
 
 # ── Model Download ────────────────────────────────────────────────────────────
