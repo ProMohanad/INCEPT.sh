@@ -43,7 +43,7 @@ abusive behavior will not be tolerated.
 
 - Python 3.11 or later
 - `make` (for running project tasks)
-- Docker (optional, for container builds and testing)
+
 
 ### Installation
 
@@ -188,7 +188,7 @@ tests/
    ```
 
 5. **PR requirements:**
-   - All CI checks must pass (lint, typecheck, test, docker-build).
+   - All CI checks must pass (lint, typecheck, test).
    - At least one approving review from a maintainer.
    - PR description must explain *what* changed and *why*.
    - If the PR adds a new intent, include: IR schema, GBNF grammar, compiler
@@ -234,7 +234,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 The scope should identify the subsystem affected. Common scopes:
 
 `compiler`, `validator`, `preclassifier`, `decomposer`, `server`, `cli`,
-`grammar`, `schema`, `recovery`, `session`, `telemetry`, `docker`, `training`,
+`grammar`, `schema`, `recovery`, `session`, `telemetry`, `training`,
 `eval`, `safety`, `docs`
 
 ### Examples
@@ -248,7 +248,6 @@ test(recovery): add tests for apt-package-not-found recovery pattern
 
 docs(api): update /v1/command endpoint examples for new response fields
 
-chore(ci): add docker-build job to GitHub Actions pipeline
 ```
 
 ### Rules

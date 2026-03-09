@@ -1,6 +1,6 @@
 # Intent Catalog
 
-INCEPT recognizes 75 actionable intents plus 3 special intents (78 total), organized into 18 categories. Each intent maps to a deterministic compiler that produces a validated command with distro-aware variants across 5 distro families: **Debian**, **RHEL**, **Arch**, **SUSE**, and **macOS**.
+INCEPT recognizes 75 actionable intents plus 3 special intents (78 total), organized into 18 categories. Each intent maps to a deterministic compiler that produces a validated command with distro-aware variants across 5 distro families: **Debian**, **RHEL**, **Arch**, and **SUSE**.
 
 ```mermaid
 pie title Intent Distribution by Category
@@ -63,7 +63,7 @@ pie title Intent Distribution by Category
 
 ## Package Management (4 intents)
 
-| Intent | Description | Debian | RHEL | Arch | SUSE | macOS |
+| Intent | Description | Debian | RHEL | Arch | SUSE |  |
 |---|---|---|---|---|---|---|
 | `install_package` | Install software packages | `apt-get install` | `dnf install` | `pacman -S` | `zypper install` | `brew install` |
 | `remove_package` | Remove software packages | `apt-get remove` | `dnf remove` | `pacman -R` | `zypper remove` | `brew uninstall` |
@@ -72,7 +72,7 @@ pie title Intent Distribution by Category
 
 ## Service Management (5 intents)
 
-| Intent | Description | Linux | macOS |
+| Intent | Description | Linux |  |
 |---|---|---|---|
 | `start_service` | Start a system service | `systemctl start` | `brew services start` |
 | `stop_service` | Stop a system service | `systemctl stop` | `brew services stop` |
@@ -90,7 +90,7 @@ pie title Intent Distribution by Category
 
 ## Log Operations (3 intents)
 
-| Intent | Description | Linux | macOS |
+| Intent | Description | Linux |  |
 |---|---|---|---|
 | `view_logs` | View system or application logs | `journalctl` | `log show` |
 | `follow_logs` | Follow log output in real-time | `journalctl -f` | `log stream` |
@@ -106,7 +106,7 @@ pie title Intent Distribution by Category
 
 ## Networking (6 intents)
 
-| Intent | Description | Linux | macOS |
+| Intent | Description | Linux |  |
 |---|---|---|---|
 | `network_info` | Display network configuration | `ip addr` | `ifconfig` |
 | `test_connectivity` | Test network connectivity | `ping -W` | `ping -t` |
@@ -117,7 +117,7 @@ pie title Intent Distribution by Category
 
 ## Process Management (3 intents)
 
-| Intent | Description | Linux | macOS |
+| Intent | Description | Linux |  |
 |---|---|---|---|
 | `process_list` | List running processes | `ps aux --sort` | `ps aux \| sort -rnk` |
 | `kill_process` | Terminate a process | `kill` | `kill` |
@@ -162,14 +162,14 @@ pie title Intent Distribution by Category
 
 ## Disk Info (2 intents)
 
-| Intent | Description | Linux | macOS |
+| Intent | Description | Linux |  |
 |---|---|---|---|
 | `list_partitions` | List disk partitions and block devices | `lsblk` | `diskutil list` |
 | `check_filesystem` | Check and repair a filesystem | `fsck` | `diskutil verifyDisk` |
 
 ## Firewall (3 intents)
 
-| Intent | Description | Debian | RHEL | macOS |
+| Intent | Description | Debian | RHEL |  |
 |---|---|---|---|---|
 | `firewall_allow` | Allow traffic on a port | `ufw allow` | `firewall-cmd --add-port` | `pfctl` |
 | `firewall_deny` | Block traffic on a port | `ufw deny` | `firewall-cmd --remove-port` | `pfctl` |
@@ -203,7 +203,7 @@ These are not compiled into commands. They control pipeline flow.
 | Intent | Description |
 |---|---|
 | `CLARIFY` | The request is ambiguous; the user is prompted for clarification |
-| `OUT_OF_SCOPE` | The request falls outside Linux/macOS system administration |
+| `OUT_OF_SCOPE` | The request falls outside Linux/ system administration |
 | `UNSAFE_REQUEST` | The request was flagged as unsafe by the safety system |
 
 ## Distro Support Matrix
@@ -215,7 +215,7 @@ graph LR
         R[RHEL<br>dnf/yum]
         A[Arch<br>pacman]
         S[SUSE<br>zypper]
-        M[macOS<br>brew]
+        M[<br>brew]
     end
 
     subgraph "Aliases"

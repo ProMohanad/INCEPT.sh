@@ -73,7 +73,7 @@ incept
 
 ```bash
 # Start the API server (subcommand)
-incept serve --host 0.0.0.0 --port 8080
+incept serve --host 127.0.0.1 --port 8080
 ```
 
 ### Shell Plugin
@@ -97,7 +97,7 @@ These variables configure the FastAPI server. They are read at startup via `Serv
 
 | Variable | Type | Default | Description |
 |---|---|---|---|
-| `INCEPT_HOST` | string | `0.0.0.0` | Server bind address |
+| `INCEPT_HOST` | string | `127.0.0.1` | Server bind address |
 | `INCEPT_PORT` | int | `8080` | Server bind port |
 | `INCEPT_API_KEY` | string | *(none)* | API key for Bearer token auth; auth is disabled if unset |
 | `INCEPT_RATE_LIMIT` | int | `60` | Maximum requests per minute per client IP (token bucket) |

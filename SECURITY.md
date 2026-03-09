@@ -61,7 +61,6 @@ The following components are in scope for security reports:
 | **Safety and validation layer** | Risk classification, blocked command detection, input sanitization |
 | **FastAPI server** | All `/v1/*` endpoints, authentication, rate limiting, input validation |
 | **REPL / CLI** | Interactive terminal, command execution, slash commands |
-| **Docker image** | Base image, runtime configuration, exposed services |
 | **Session management** | Session store, cross-turn reference resolution |
 | **Telemetry** | Local SQLite storage, anonymization, data export |
 | **Build and CI** | GitHub Actions workflows, build scripts, dependency management |
@@ -84,7 +83,6 @@ INCEPT is designed with the following security principles:
 - The system operates **100% offline** at inference time.
 - No network calls are made during command generation or execution.
 - No telemetry data is sent externally. All telemetry is local-only (SQLite).
-- The Docker image runs with `--network=none` capability.
 
 ### Defense in Depth (Command Safety)
 
@@ -120,7 +118,6 @@ compiler-validator-sanitizer chain.
 
 - Runs as non-root user (`incept`, UID 1000).
 - No unnecessary Linux capabilities.
-- Resource limits enforced via `docker-compose.yml` (1 GB memory, 2 CPUs).
 - Health check configured for orchestrator integration.
 - Base image scanned for known CVEs.
 

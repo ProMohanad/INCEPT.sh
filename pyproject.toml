@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "incept"
 version = "1.0.0"
-description = "Offline NL to Linux command compiler using constrained small-model decoding"
+description = "Offline command inference engine for Linux. No GPU, no API, no internet required."
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 dependencies = [

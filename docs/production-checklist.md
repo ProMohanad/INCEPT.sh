@@ -5,8 +5,6 @@ Complete this checklist before deploying INCEPT to a production environment.
 ## Build and Test
 
 - [ ] All tests pass (`pytest` exits with code 0)
-- [ ] Docker image builds successfully
-- [ ] Docker image size is under 1 GB (excluding model file)
 - [ ] Smoke test passes against the built image (`./scripts/smoke_test.sh`)
 
 ## Security
@@ -26,12 +24,10 @@ Complete this checklist before deploying INCEPT to a production environment.
 
 ## Health and Monitoring
 
-- [ ] Health check is configured in the orchestrator (Kubernetes, ECS, Docker Swarm)
   - Liveness: `GET /v1/health`
   - Readiness: `GET /v1/health/ready`
 - [ ] Prometheus (or equivalent) is scraping `/v1/metrics`
 - [ ] Monitoring alerts are configured:
-  - Container unhealthy
   - High error rate (>5% over 5 minutes)
   - High latency (>5s average over 5 minutes)
   - Service unreachable
@@ -56,7 +52,6 @@ Complete this checklist before deploying INCEPT to a production environment.
 
 ## Rollback
 
-- [ ] Previous Docker image version is tagged and available
 - [ ] Rollback procedure is tested (`PREVIOUS_TAG=vX.Y.Z ./scripts/rollback.sh`)
 - [ ] Rollback completes within acceptable downtime window
 
@@ -64,7 +59,6 @@ Complete this checklist before deploying INCEPT to a production environment.
 
 - [ ] Only port 8080 (or the configured port) is exposed
 - [ ] Network access is restricted to trusted clients
-- [ ] No sensitive host directories are mounted into the container
 
 ## Final Verification
 

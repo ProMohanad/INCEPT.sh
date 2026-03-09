@@ -1,6 +1,6 @@
 # API Reference
 
-INCEPT exposes a RESTful JSON API via FastAPI on `/v1/` endpoints. The default bind address is `0.0.0.0:8080`.
+INCEPT exposes a RESTful JSON API via FastAPI on `/v1/` endpoints. The default bind address is `127.0.0.1:8080`.
 
 ## Authentication
 

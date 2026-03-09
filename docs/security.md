@@ -101,9 +101,7 @@ INCEPT generates commands but does not execute them by default on the server sid
 
 Every request is subject to a configurable timeout (default: 30 seconds). This prevents slow or hung pipeline stages from consuming server resources indefinitely. Timed-out requests return `504 Gateway Timeout`.
 
-## Non-Root Docker Container
 
-The Docker image runs as user `incept` (UID 1000), not root:
 
 - No privileged mode required.
 - No special Linux capabilities needed.
@@ -155,5 +153,4 @@ flowchart TB
 6. **Set appropriate rate limits** based on expected traffic.
 7. **Set `INCEPT_MAX_SESSIONS`** based on expected concurrent users.
 8. **Monitor the `/v1/metrics` endpoint** for anomalous request patterns.
-9. **Keep the Docker image updated** with security patches for the Python base image.
 10. **Do not mount sensitive host directories** into the container.
